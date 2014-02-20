@@ -1,0 +1,5 @@
+*.o
+Makefile
+*.list
+*.user
+rpm
