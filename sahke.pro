@@ -20,8 +20,13 @@ OTHER_FILES += sahke/qml/sahke.qml \
     sahke/qml/pages/SecondPage.qml \
     rpm/sahke.spec \
     rpm/sahke.yaml \
-    sahke.desktop \
-    3rdParty/tg/tg/tg.pub
+    sahke.desktop
+#    etc/tg.pub
+
+#pubkeys.files = etc
+#pubkeys.path = /etc/$${TARGET}
+
+#INSTALLS += pubkeys
 
 #TARGET = sahke
 

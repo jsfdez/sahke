@@ -3,3 +3,4 @@ Makefile
 *.list
 *.user
 rpm
+moc_*.cpp

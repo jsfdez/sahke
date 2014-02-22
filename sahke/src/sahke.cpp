@@ -33,6 +33,7 @@
 #endif
 
 #include <sailfishapp.h>
+#include <QGuiApplication>
 
 //extern "C" {
 //#include "mtproto-client.h"
@@ -42,14 +43,30 @@
 
 //#include "wrapper.h"
 
-extern "C" {
-extern void on_start();
+//extern "C" {
+//extern void on_start();
 //extern void running_for_first_time(void);
-}
+//}
+
+//extern long long pk_fingerprint;
+
+#include "telegram.h"
 
 int main(int argc, char *argv[])
 {
-    on_start();
+    QGuiApplication* app = SailfishApp::application(argc, argv);
+    QQuickView* view = SailfishApp::createView();
+    view->engine()->rootContext()->setContextProperty(
+                "telegram", new Telegram(view));
+    view->setSource(SailfishApp::pathTo("qml/sahke.qml"));
+    view->show();
+
+    return app->exec();
+
+//    qDebug() <<"Current directory"<< QDir::currentPath();
+//    on_start();
+
+//    qDebug() << "Fingerprint:" << pk_fingerprint;
 //    qDebug() << "Version:" << test();
     //running_for_first_time();
     // SailfishApp::main() will display "qml/template.qml", if you need more
@@ -61,6 +78,6 @@ int main(int argc, char *argv[])
     //
     // To display the view, call "show()" (will show fullscreen on device).
 
-    return SailfishApp::main(argc, argv);
+//    return SailfishApp::main(argc, argv);
 }
 
