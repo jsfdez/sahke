@@ -28,28 +28,46 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifdef QT_QML_DEBUG
-#include <QtQuick>
-#endif
+import QtQuick 2.0
+import Sailfish.Silica 1.0
 
-#include <sailfishapp.h>
 
-//extern "C" {
-//extern void running_for_first_time(void);
-//}
+Page {
+    id: page
 
-int sahke_main(int argc, char *argv[])
-{
-//    running_for_first_time();
-    // SailfishApp::main() will display "qml/template.qml", if you need more
-    // control over initialization, you can use:
-    //
-    //   - SailfishApp::application(int, char *[]) to get the QGuiApplication *
-    //   - SailfishApp::createView() to get a new QQuickView * instance
-    //   - SailfishApp::pathTo(QString) to get a QUrl to a resource file
-    //
-    // To display the view, call "show()" (will show fullscreen on device).
+    // To enable PullDownMenu, place our content in a SilicaFlickable
+    SilicaFlickable {
+        anchors.fill: parent
 
-    return SailfishApp::main(argc, argv);
+        // PullDownMenu and PushUpMenu must be declared in SilicaFlickable, SilicaListView or SilicaGridView
+        PullDownMenu {
+            MenuItem {
+                text: "Show Page 2"
+                onClicked: pageStack.push(Qt.resolvedUrl("SecondPage.qml"))
+            }
+        }
+
+        // Tell SilicaFlickable the height of its content.
+        contentHeight: column.height
+
+        // Place our content in a Column.  The PageHeader is always placed at the top
+        // of the page, followed by our content.
+        Column {
+            id: column
+
+            width: page.width
+            spacing: Theme.paddingLarge
+            PageHeader {
+                title: "UI Template"
+            }
+            Label {
+                x: Theme.paddingLarge
+                text: "Hello Sailors"
+                color: Theme.secondaryHighlightColor
+                font.pixelSize: Theme.fontSizeExtraLarge
+            }
+        }
+    }
 }
+
 
