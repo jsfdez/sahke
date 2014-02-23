@@ -32,19 +32,33 @@
 #include <QtQuick>
 #endif
 
+#ifndef Q_OS_CYGWIN
 #include <sailfishapp.h>
+#endif
 #include <QGuiApplication>
 
 #include "telegram.h"
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication* app = SailfishApp::application(argc, argv);
+    QGuiApplication* app;
+    QQuickView* view;
 
-    QQuickView* view = SailfishApp::createView();
+#ifdef Q_OS_CYGWIN
+    app = new QGuiApplication(argc, argv);
+    view = new QQuickView;
+#else
+    app = SailfishApp::application(argc, argv);
+    view = SailfishApp::createView();
+#endif
+
     view->engine()->rootContext()->setContextProperty(
                 "telegram", new Telegram(view));
+#ifdef Q_OS_CYGWIN
+    view->setSource(QUrl::fromLocalFile("win/qml/sahke.qml");
+#else
     view->setSource(SailfishApp::pathTo("qml/sahke.qml"));
+#endif
     view->show();
 
     return app->exec();
