@@ -31,41 +31,32 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-
 Page {
     id: page
 
-    // To enable PullDownMenu, place our content in a SilicaFlickable
-    SilicaFlickable {
-        anchors.fill: parent
+    BusyIndicator {
+        id: busyIndicator;
+        running: true;
+        anchors.centerIn: parent;
+        size: BusyIndicatorSize.Large;
+    }
 
-        // PullDownMenu and PushUpMenu must be declared in SilicaFlickable, SilicaListView or SilicaGridView
-        PullDownMenu {
-            MenuItem {
-                text: "Show Page 2"
-                onClicked: pageStack.push(Qt.resolvedUrl("SecondPage.qml"))
-            }
-        }
+    Label {
+        text: qsTr("Initializing Sähke...");
+        anchors.top: busyIndicator.bottom;
+        anchors.topMargin: 10;
+        anchors.horizontalCenter: parent.horizontalCenter;
+    }
 
-        // Tell SilicaFlickable the height of its content.
-        contentHeight: column.height
+    Component.onCompleted: {
+        telegram.start();
+    }
 
-        // Place our content in a Column.  The PageHeader is always placed at the top
-        // of the page, followed by our content.
-        Column {
-            id: column
-
-            width: page.width
-            spacing: Theme.paddingLarge
-            PageHeader {
-                title: "UI Template"
-            }
-            Label {
-                x: Theme.paddingLarge
-                text: "Hello Sailors"
-                color: Theme.secondaryHighlightColor
-                font.pixelSize: Theme.fontSizeExtraLarge
-            }
+    Connections {
+        target: telegram;
+        onInitialized: {
+            console.log("Initialized");
+            pageStack.replace(Qt.resolvedUrl("SecondPage.qml"));
         }
     }
 }

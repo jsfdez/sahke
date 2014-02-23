@@ -18,6 +18,7 @@ OTHER_FILES += sahke/qml/sahke.qml \
     sahke/qml/cover/CoverPage.qml \
     sahke/qml/pages/FirstPage.qml \
     sahke/qml/pages/SecondPage.qml \
+    sahke/qml/pages/WaitingPage.qml \
     rpm/sahke.spec \
     rpm/sahke.yaml \
     sahke.desktop

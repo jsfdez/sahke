@@ -55,6 +55,9 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication* app = SailfishApp::application(argc, argv);
+
+    qRegisterMetaType<Telegram::State>("State");
+
     QQuickView* view = SailfishApp::createView();
     view->engine()->rootContext()->setContextProperty(
                 "telegram", new Telegram(view));

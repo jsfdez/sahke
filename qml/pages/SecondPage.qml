@@ -31,28 +31,43 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-
 Page {
-    id: page
-    SilicaListView {
-        id: listView
-        model: 20
-        anchors.fill: parent
-        header: PageHeader {
-            title: "Nested Page"
-        }
-        delegate: BackgroundItem {
-            id: delegate
+    id: page;
 
-            Label {
-                x: Theme.paddingLarge
-                text: "Item " + index
-                anchors.verticalCenter: parent.verticalCenter
-                color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
-            }
-            onClicked: console.log("Clicked " + index)
+    Label {
+        id: plusSign;
+        anchors.left: parent.left;
+        anchors.leftMargin: Theme.paddingLarge;
+        anchors.top: phoneNumber.top;
+        anchors.topMargin: Theme.paddingSmall;
+        horizontalAlignment: Text.AlignRight;
+        text: "+";
+        font: phoneNumber.font;
+    }
+
+    TextField {
+        id: phoneNumber;
+        anchors.verticalCenter: parent.verticalCenter;
+        anchors.left: plusSign.right;
+        anchors.right: parent.right;
+        anchors.rightMargin: Theme.paddingLarge;
+        placeholderText: "Enter phone number";
+        inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhDigitsOnly;
+        validator: RegExpValidator { regExp: /^[0-9]{11,}$/ }
+        label: "Phone number";
+    }
+
+    Button {
+        text: "Continue";
+        enabled: phoneNumber.acceptableInput;
+        anchors.horizontalCenter: parent.horizontalCenter;
+        anchors.bottom: parent.bottom;
+        anchors.bottomMargin: Theme.paddingLarge;
+        onClicked: {
+            console.log("Registering phone...");
+            telegram.registerPhone("+" + phoneNumber.text);
+            pageStack.replace(Qt.resolvedUrl("AuthorizingPage.qml"));
         }
-        VerticalScrollDecorator {}
     }
 }
 
