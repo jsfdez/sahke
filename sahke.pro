@@ -8,7 +8,9 @@
 #         - icon definition filename in desktop file must be changed
 TEMPLATE = subdirs
 
-CONFIG += sailfishapp
+!win32{
+    CONFIG += sailfishapp
+}
 
 SUBDIRS += 3rdParty/tg/tg.pro \
     src

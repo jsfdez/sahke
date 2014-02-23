@@ -19,7 +19,7 @@ void TelegramPrivate::run()
 {
     qDebug() << "Thread started";
 
-    verbosity = 10;
+//    verbosity = 10;
 
     lua_init();
     lua_pushlightuserdata(luaState, this);
@@ -48,7 +48,9 @@ int TelegramPrivate::onUsernameRequested(lua_State *L)
         eventLoop.quit();
         lua_pushstring(L, phoneNumber.toLatin1().data());
     });
+    qDebug() << "Event loop started";
     eventLoop.exec();
+    qDebug() << "Event loop finished";
     return 1;
 }
 
