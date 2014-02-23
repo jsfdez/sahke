@@ -54,9 +54,9 @@ Page {
 
     Connections {
         target: telegram;
-        onInitialized: {
-            console.log("Initialized");
-            pageStack.replace(Qt.resolvedUrl("SecondPage.qml"));
+        onPhoneNumberRequested: {
+            console.log("Changing page to PhoneNumberPage");
+            pageStack.replace(Qt.resolvedUrl("PhoneNumberPage.qml"));
         }
     }
 }

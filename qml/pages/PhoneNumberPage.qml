@@ -55,18 +55,20 @@ Page {
         inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhDigitsOnly;
         validator: RegExpValidator { regExp: /^[0-9]{11,}$/ }
         label: "Phone number";
+
+        text: "34678489951";
     }
 
     Button {
-        text: "Continue";
+        text: qsTr("Continue");
         enabled: phoneNumber.acceptableInput;
         anchors.horizontalCenter: parent.horizontalCenter;
         anchors.bottom: parent.bottom;
         anchors.bottomMargin: Theme.paddingLarge;
         onClicked: {
-            console.log("Registering phone...");
-            telegram.registerPhone("+" + phoneNumber.text);
-            pageStack.replace(Qt.resolvedUrl("AuthorizingPage.qml"));
+            console.log("Finish registration...");
+            telegram.registerPhoneNumber("+" + phoneNumber.text);
+            pageStack.replace(Qt.resolvedUrl("WorkingPage.qml"));
         }
     }
 }

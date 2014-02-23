@@ -35,28 +35,11 @@
 #include <sailfishapp.h>
 #include <QGuiApplication>
 
-//extern "C" {
-//#include "mtproto-client.h"
-//#include "loop.h"
-//}
-
-
-//#include "wrapper.h"
-
-//extern "C" {
-//extern void on_start();
-//extern void running_for_first_time(void);
-//}
-
-//extern long long pk_fingerprint;
-
 #include "telegram.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication* app = SailfishApp::application(argc, argv);
-
-    qRegisterMetaType<Telegram::State>("State");
 
     QQuickView* view = SailfishApp::createView();
     view->engine()->rootContext()->setContextProperty(
@@ -65,22 +48,5 @@ int main(int argc, char *argv[])
     view->show();
 
     return app->exec();
-
-//    qDebug() <<"Current directory"<< QDir::currentPath();
-//    on_start();
-
-//    qDebug() << "Fingerprint:" << pk_fingerprint;
-//    qDebug() << "Version:" << test();
-    //running_for_first_time();
-    // SailfishApp::main() will display "qml/template.qml", if you need more
-    // control over initialization, you can use:
-    //
-    //   - SailfishApp::application(int, char *[]) to get the QGuiApplication *
-    //   - SailfishApp::createView() to get a new QQuickView * instance
-    //   - SailfishApp::pathTo(QString) to get a QUrl to a resource file
-    //
-    // To display the view, call "show()" (will show fullscreen on device).
-
-//    return SailfishApp::main(argc, argv);
 }
 

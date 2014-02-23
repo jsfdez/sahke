@@ -11,17 +11,18 @@ TEMPLATE = subdirs
 CONFIG += sailfishapp
 
 SUBDIRS += 3rdParty/tg/tg.pro \
-#    3rdParty/config/config.pro \
-    sahke
+    src
 
-OTHER_FILES += sahke/qml/sahke.qml \
-    sahke/qml/cover/CoverPage.qml \
-    sahke/qml/pages/FirstPage.qml \
-    sahke/qml/pages/SecondPage.qml \
-    sahke/qml/pages/WaitingPage.qml \
-    rpm/sahke.spec \
+OTHER_FILES += rpm/sahke.spec \
     rpm/sahke.yaml \
-    sahke.desktop
+    sahke.desktop \
+    qml/sahke.qml \
+    qml/cover/CoverPage.qml \
+    qml/pages/PhoneNumberPage.qml \
+    qml/pages/WorkingPage.qml \
+    qml/pages/RegisteringPage.qml \
+    qml/pages/UserDetailsPage.qml \
+    qml/pages/WaitingPage.qml
 #    etc/tg.pub
 
 #pubkeys.files = etc
