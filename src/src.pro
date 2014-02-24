@@ -5,15 +5,14 @@ TARGET = sahke
 }
 CONFIG += debug
 HEADERS += telegram.h \
-    tgloopthread.h \
     telegram_p.h
 SOURCES += sahke.cpp \
     telegram.cpp \
-    tgloopthread.cpp \
     telegram_p.cpp
+#    lua-tg.cpp
 
 QMAKE_CXXFLAGS += -std=c++0x
 
-INCLUDEPATH += ../3rdParty/tg
+INCLUDEPATH += ../3rdParty/tg/tg
 LIBS += -L../lib -ltg
 LIBS += -lcrypto -lz -lrt -lm -lreadline -lssl -llua

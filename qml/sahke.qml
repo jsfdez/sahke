@@ -34,6 +34,6 @@ import "pages"
 
 ApplicationWindow
 {
-    initialPage: Component { FirstPage { } }
+    initialPage: Component { WorkingPage { } }
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
 }

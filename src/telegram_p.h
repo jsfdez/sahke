@@ -14,8 +14,8 @@ int disabled_main (int argc, char **argv);
 void lua_init ();
 }
 
-extern lua_State *luaState;
-extern char *default_username;
+extern lua_State* luaState;
+extern char* default_username;
 extern int verbosity;
 
 class TelegramPrivate : public QThread

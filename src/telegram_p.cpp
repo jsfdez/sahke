@@ -2,6 +2,8 @@
 
 #include <QDebug>
 #include <QEventLoop>
+#include <future>
+#include <string>
 
 TelegramPrivate::TelegramPrivate(Telegram* parent)
     : QThread(parent)
@@ -24,10 +26,10 @@ void TelegramPrivate::run()
     lua_init();
     lua_pushlightuserdata(luaState, this);
     lua_setglobal(luaState, CONTEXT);
-    lua_register(luaState, "on_username_asked",
+    lua_register(luaState, "on_username_requested",
                  TelegramPrivate::onUsernameRequested);
-    lua_register(luaState, "on_code_asked", TelegramPrivate::onCodeRequested);
-    lua_register(luaState, "on_registration_asked",
+    lua_register(luaState, "on_code_requested", TelegramPrivate::onCodeRequested);
+    lua_register(luaState, "on_registration_requested",
                  TelegramPrivate::onRegistrationRequested);
     qDebug() << "Lua functions registered";
 
@@ -37,20 +39,26 @@ void TelegramPrivate::run()
 
 int TelegramPrivate::onUsernameRequested(lua_State *L)
 {
-    qDebug() << "username requested";
     TelegramPrivate* q = context(L);
-    QEventLoop eventLoop;
-    emit q->q_ptr->phoneNumberRequested();
-
-    connect(q, &TelegramPrivate::phoneNumberSet, [&](const QString& phoneNumber)
+    std::promise<QString> promise;
+    std::future<QString> future = promise.get_future();
+    connect(q, &TelegramPrivate::phoneNumberSet, [&promise](
+            const QString& phoneNumber)
     {
-        qDebug() << "Signal received. canceling the eventloop";
-        eventLoop.quit();
-        lua_pushstring(L, phoneNumber.toLatin1().data());
+        promise.set_value(phoneNumber);
     });
-    qDebug() << "Event loop started";
-    eventLoop.exec();
-    qDebug() << "Event loop finished";
+    emit q->q_ptr->phoneNumberRequested();
+    lua_pushstring(L, future.get().toLatin1().data());
+//    std::packaged_task<QString(const QString&)> task(
+//                [](const QString& phoneNumber)
+//    {
+//        return phoneNumber;
+//    });
+//    std::packaged_task<QString(const QString&)> qstringTask([](const QString& phoneNumber) -> QString { return phoneNumber; } );
+//    std::future<QString> future = task.get_future();
+//    connect(q, &TelegramPrivate::phoneNumberSet, qstringTask);
+//    future.wait();
+//    lua_pushstring(L, future.get().toLatin1().data());
     return 1;
 }
 
