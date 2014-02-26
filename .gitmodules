@@ -1,0 +1,3 @@
+[submodule "3rdParty/tg"]
+	path = 3rdParty/tg/tg
+	url = git@github.com:jsfdez/tg.git

@@ -10,9 +10,7 @@
 #   DEBUG in device -> %define debug_package %{nil}
 TEMPLATE = subdirs
 
-!win32{
-    CONFIG += sailfishapp
-}
+CONFIG += sailfishapp
 
 SUBDIRS += 3rdParty/tg/tg.pro \
     src
@@ -29,9 +27,9 @@ OTHER_FILES += rpm/sahke.spec \
     qml/pages/WaitingPage.qml \
     qml/pages/ConversationsPage.qml \
     qml/pages/ContactsPage.qml
-#    3rdParty/tg/tg/tg.pub
+    3rdParty/tg/server.pub
 
-pubkeys.files = 3rdParty/tg/tg/tg.pub
+pubkeys.files = 3rdParty/tg/server.pub
 pubkeys.path = /etc/$${TARGET}
 
 INSTALLS += pubkeys

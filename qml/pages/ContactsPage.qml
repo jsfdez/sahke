@@ -5,9 +5,9 @@ Page {
     Column {
         spacing: Theme.paddingMedium;
         anchors.fill: parent
-        anchors.margins: Theme.paddingLarge;
+        anchors.margins: Theme.paddingSmall;
         PageHeader {
-            title: qsTr("Contacs");
+            title: qsTr("Contacts");
         }
     }
 }

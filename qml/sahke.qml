@@ -35,6 +35,9 @@ import "pages"
 
 ApplicationWindow
 {
+    property url _conversationsPage: Qt.resolvedUrl("pages/ConversationsPage.qml");
+    property url _contactsPage: Qt.resolvedUrl("pages/ContactsPage.qml");
+
     initialPage: Component { WorkingPage { } }
 
     Connections {
@@ -58,9 +61,8 @@ ApplicationWindow
             console.log("Status changed: " + telegram.status);
             if(telegram.status === Telegram.Connected)
             {
-                pageStack.replace(
-                            [Qt.resolvedUrl("pages/ContactsPage.qml"),
-                             Qt.resolvedUrl("pages/ConversationsPage.qml")]);
+                pageStack.replace(Qt.resolvedUrl(_conversationsPage));
+                pageStack.pushAttached(Qt.resolvedUrl(_contactsPage));
             }
         }
     }
