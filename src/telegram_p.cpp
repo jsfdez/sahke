@@ -5,41 +5,36 @@
 #include <future>
 #include <string>
 
+#include "tools.h"
+
 TelegramPrivate::TelegramPrivate(Telegram* parent)
     : QThread(parent)
     , q_ptr(parent)
+    , status(Telegram::Status::Connecting)
 {
-}
-
-TelegramPrivate* TelegramPrivate::context(lua_State *L)
-{
-    lua_getglobal(L, CONTEXT);
-    return reinterpret_cast<TelegramPrivate*>(lua_touserdata(L, 1));
+    pConfig.reset(new configuration);
+    pConfig->context = this;
+    pConfig->verbosity = 1;
+    pConfig->pfn_ask_username = (fn_ask_username_callback)
+            &TelegramPrivate::onUsernameCallback;
+    pConfig->pfn_ask_code = (fn_ask_code_callback)
+            &TelegramPrivate::onCheckCodeCallback;
+    pConfig->pfn_ask_code_register = (fn_ask_code_register_callback)
+            &TelegramPrivate::onRegisterCallback;
+    pConfig->pfn_connected = (fn_connected_callback)
+            &TelegramPrivate::onConnected;
 }
 
 void TelegramPrivate::run()
 {
-    qDebug() << "Thread started";
-
-//    verbosity = 10;
-
-    lua_init();
-    lua_pushlightuserdata(luaState, this);
-    lua_setglobal(luaState, CONTEXT);
-    lua_register(luaState, "on_username_requested",
-                 TelegramPrivate::onUsernameRequested);
-    lua_register(luaState, "on_code_requested", TelegramPrivate::onCodeRequested);
-    lua_register(luaState, "on_registration_requested",
-                 TelegramPrivate::onRegistrationRequested);
-    qDebug() << "Lua functions registered";
-
     qDebug() << "Calling tg-main";
-    disabled_main(0, nullptr);
+    initialize_lib_tg(pConfig.get());
 }
 
-int TelegramPrivate::onUsernameRequested(lua_State *L)
+void TelegramPrivate::onUsernameCallback(void *context, char **username)
 {
-    TelegramPrivate* q = context(L);
+    qDebug() << "Recibing username callback";
+    TelegramPrivate* q = static_cast<TelegramPrivate*>(context);
     std::promise<QString> promise;
     std::future<QString> future = promise.get_future();
     connect(q, &TelegramPrivate::phoneNumberSet, [&promise](
@@ -48,54 +43,60 @@ int TelegramPrivate::onUsernameRequested(lua_State *L)
         promise.set_value(phoneNumber);
     });
     emit q->q_ptr->phoneNumberRequested();
-    lua_pushstring(L, future.get().toLatin1().data());
-//    std::packaged_task<QString(const QString&)> task(
-//                [](const QString& phoneNumber)
-//    {
-//        return phoneNumber;
-//    });
-//    std::packaged_task<QString(const QString&)> qstringTask([](const QString& phoneNumber) -> QString { return phoneNumber; } );
-//    std::future<QString> future = task.get_future();
-//    connect(q, &TelegramPrivate::phoneNumberSet, qstringTask);
-//    future.wait();
-//    lua_pushstring(L, future.get().toLatin1().data());
-    return 1;
+
+    *username = tstrdup(future.get().toLatin1().data());
 }
 
-int TelegramPrivate::onCodeRequested(lua_State *L)
+void TelegramPrivate::onCheckCodeCallback(void *context, char **code)
 {
-    qDebug() << "Authorization code requested";
-    TelegramPrivate* q = context(L);
-    QEventLoop eventLoop;
-    emit q->q_ptr->codeResquested();
-
-    connect(q, &TelegramPrivate::userDataSet, [&](const QString& code,
+    qDebug() << "SMS verification";
+    TelegramPrivate* q = static_cast<TelegramPrivate*>(context);
+    std::promise<QString> promise;
+    std::future<QString> future = promise.get_future();
+    connect(q, &TelegramPrivate::userDataSet, [&promise](const QString& code,
             const QString&, const QString&)
     {
-        qDebug() << "Signal received. canceling the eventloop";
-        eventLoop.quit();
-        lua_pushstring(L, code.toLatin1().data());
+        promise.set_value(code);
     });
-    eventLoop.exec();
-    return 1;
+    emit q->q_ptr->codeResquested();
+
+    *code = tstrdup(future.get().toLatin1().data());
 }
 
-int TelegramPrivate::onRegistrationRequested(lua_State *L)
+void TelegramPrivate::onRegisterCallback(void *context, char **code,
+                                         char **first_name, char **last_name)
 {
-    qDebug() << "Registration requested";
-    TelegramPrivate* q = context(L);
-    QEventLoop eventLoop;
-    emit q->q_ptr->registrationRequested();
-
-    connect(q, &TelegramPrivate::userDataSet, [&](const QString& code,
+    TelegramPrivate* q = static_cast<TelegramPrivate*>(context);
+    std::promise<std::tuple<QString,QString,QString>> promise;
+    std::future<std::tuple<QString,QString,QString>> future = promise
+            .get_future();
+    connect(q, &TelegramPrivate::userDataSet, [&promise](const QString& code,
             const QString& firstName, const QString& lastName)
     {
-        qDebug() << "Signal received. canceling the eventloop";
-        eventLoop.quit();
-        lua_pushstring(L, code.toLatin1().data());
-        lua_pushstring(L, firstName.toLatin1().data());
-        lua_pushstring(L, lastName.toLatin1().data());
+        promise.set_value(std::make_tuple(code, firstName, lastName));
     });
-    eventLoop.exec();
-    return 3;
+    emit q->q_ptr->registrationRequested();
+    QString _code, firstName, lastName;
+
+    future.wait();
+    std::tie(_code, firstName, lastName) = future.get();
+    *code = tstrdup(_code.toLatin1().data());
+    *first_name = tstrdup(firstName.toLatin1().data());
+    *last_name = tstrdup(lastName.toLatin1().data());
+}
+
+void TelegramPrivate::onConnected(void *context)
+{
+    TelegramPrivate* q = static_cast<TelegramPrivate*>(context);
+    q->setStatus(Telegram::Status::Connected);
+}
+
+void TelegramPrivate::setStatus(Telegram::Status value)
+{
+    Q_Q(Telegram);
+    if (status != value)
+    {
+        status = value;
+        emit q->statusChanged();
+    }
 }

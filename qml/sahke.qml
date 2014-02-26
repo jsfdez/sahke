@@ -30,10 +30,44 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import Telegram 1.0
 import "pages"
 
 ApplicationWindow
 {
     initialPage: Component { WorkingPage { } }
+
+    Connections {
+        target: telegram;
+        onPhoneNumberRequested: {
+            console.log("Changing page to PhoneNumberPage");
+            pageStack.push(Qt.resolvedUrl("pages/PhoneNumberPage.qml"));
+        }
+        onCodeResquested: {
+            console.log("Changing page to UserDetailsPage (CODE_REQUEST)");
+            pageStack.push(Qt.resolvedUrl("pages/UserDetailsPage.qml"),
+                           {state: ""});
+        }
+        onRegistrationRequested: {
+            console.log("Changing page to UserDetailsPage (REGISTRATION)");
+            pageStack.push(Qt.resolvedUrl("pages/UserDetailsPage.qml",
+                                          {state: "register_mode"}));
+        }
+
+        onStatusChanged: {
+            console.log("Status changed: " + telegram.status);
+            if(telegram.status === Telegram.Connected)
+            {
+                pageStack.replace(
+                            [Qt.resolvedUrl("pages/ContactsPage.qml"),
+                             Qt.resolvedUrl("pages/ConversationsPage.qml")]);
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        telegram.start();
+    }
+
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
 }

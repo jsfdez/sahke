@@ -6,6 +6,8 @@
 #         - desktop icon filename must be changed
 #         - desktop filename must be changed
 #         - icon definition filename in desktop file must be changed
+
+#   DEBUG in device -> %define debug_package %{nil}
 TEMPLATE = subdirs
 
 !win32{
@@ -24,13 +26,15 @@ OTHER_FILES += rpm/sahke.spec \
     qml/pages/WorkingPage.qml \
     qml/pages/RegisteringPage.qml \
     qml/pages/UserDetailsPage.qml \
-    qml/pages/WaitingPage.qml
-#    etc/tg.pub
+    qml/pages/WaitingPage.qml \
+    qml/pages/ConversationsPage.qml \
+    qml/pages/ContactsPage.qml
+#    3rdParty/tg/tg/tg.pub
 
-#pubkeys.files = etc
-#pubkeys.path = /etc/$${TARGET}
+pubkeys.files = 3rdParty/tg/tg/tg.pub
+pubkeys.path = /etc/$${TARGET}
 
-#INSTALLS += pubkeys
+INSTALLS += pubkeys
 
 #TARGET = sahke
 

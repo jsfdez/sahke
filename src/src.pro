@@ -9,10 +9,9 @@ HEADERS += telegram.h \
 SOURCES += sahke.cpp \
     telegram.cpp \
     telegram_p.cpp
-#    lua-tg.cpp
 
-QMAKE_CXXFLAGS += -std=c++0x
-
+QMAKE_CXXFLAGS += -std=c++0x -fPIC
+PRE_TARGETDEPS += ../lib/libtg.a
 INCLUDEPATH += ../3rdParty/tg/tg
 LIBS += -L../lib -ltg
-LIBS += -lcrypto -lz -lrt -lm -lreadline -lssl -llua
+LIBS += -lcrypto -lz -lrt -lm -lreadline -lssl

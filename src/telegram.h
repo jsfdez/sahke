@@ -8,10 +8,19 @@ class TelegramPrivate;
 class Telegram : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(Status)
     Q_DECLARE_PRIVATE(Telegram)
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
+    enum Status
+    {
+        Connecting,
+        Connected
+    };
+
     explicit Telegram(QObject *parent = 0);
+    Status status() const;
 
 public slots:
     void start();
@@ -23,6 +32,7 @@ signals:
     void phoneNumberRequested();
     void codeResquested();
     void registrationRequested();
+    void statusChanged();
 
 private:
     TelegramPrivate* d_ptr;

@@ -67,8 +67,8 @@ Page {
         anchors.bottomMargin: Theme.paddingLarge;
         onClicked: {
             console.log("Finish registration...");
+            pageStack.pop(null, PageStackAction.Immediate);
             telegram.registerPhoneNumber("+" + phoneNumber.text);
-            pageStack.replace(Qt.resolvedUrl("WorkingPage.qml"));
         }
     }
 }

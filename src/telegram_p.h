@@ -2,21 +2,14 @@
 #define TELEGRAM_P_H
 
 #include <QThread>
+#include <memory>
 
 #include "telegram.h"
 
-#define CONTEXT     "context"
-
 extern "C"
 {
-#include <lua.h>
-int disabled_main (int argc, char **argv);
-void lua_init ();
+#include "libtg.h"
 }
-
-extern lua_State* luaState;
-extern char* default_username;
-extern int verbosity;
 
 class TelegramPrivate : public QThread
 {
@@ -25,11 +18,6 @@ class TelegramPrivate : public QThread
 
 public:
     TelegramPrivate(Telegram* parent);
-
-    static TelegramPrivate* context(lua_State* L);
-    static int onUsernameRequested(lua_State* L);
-    static int onCodeRequested(lua_State* L);
-    static int onRegistrationRequested(lua_State* L);
 
 signals:
     void phoneNumberSet(const QString& phoneNumber);
@@ -40,7 +28,16 @@ protected:
     virtual void run();
 
 private:
+    static void onUsernameCallback(void* context, char** username);
+    static void onCheckCodeCallback(void* context, char** code);
+    static void onRegisterCallback(void* context, char** code, char** firstName,
+                                   char** lastName);
+    static void onConnected(void* context);
+    void setStatus(Telegram::Status value);
+
     Telegram* q_ptr;
+    std::unique_ptr<configuration> pConfig;
+    Telegram::Status status;
 };
 
 #endif // TELEGRAM_P_H

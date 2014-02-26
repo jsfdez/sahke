@@ -44,6 +44,8 @@ int main(int argc, char *argv[])
     QGuiApplication* app;
     QQuickView* view;
 
+    qmlRegisterType<Telegram>("Telegram", 1, 0, "Telegram");
+
 #ifdef Q_OS_CYGWIN
     app = new QGuiApplication(argc, argv);
     view = new QQuickView;

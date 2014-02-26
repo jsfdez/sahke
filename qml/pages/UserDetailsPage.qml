@@ -3,34 +3,46 @@ import Sailfish.Silica 1.0
 
 Page {
     Column {
-        spacing: 10
+        spacing: Theme.paddingMedium;
         anchors.fill: parent
+        anchors.margins: Theme.paddingLarge;
         PageHeader {
             title: qsTr("Registration deatils");
         }
         TextField {
             id: code;
-            label: qsTr("Received SMS Code");
+            label: "Received SMS Code";
+            placeholderText: label;
+            anchors.left: parent.left;
+            anchors.right: parent.right;
             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhDigitsOnly;
-            validator: RegExpValidator { regExp: /^[0-9]{11,}$/ }
+            validator: RegExpValidator { regExp: /^[0-9]{5,}$/ }
         }
         TextField {
             id: firstName;
-            label: qsTr("First name");
+            label: "First name";
+            placeholderText: label;
+            anchors.left: parent.left;
+            anchors.right: parent.right;
             enabled: false;
         }
         TextField {
             id: lastName;
-            label: qsTr("Last name");
+            label: "Last name";
+            placeholderText: label;
+            anchors.left: parent.left;
+            anchors.right: parent.right;
             enabled: false;
         }
         Button {
             text: qsTr("Continue");
+            enabled: code.acceptableInput;
             anchors.horizontalCenter: parent.horizontalCenter;
             onClicked: {
                 console.log("Registering phone...");
-                telegram.registerPhoneNumber("+" + phoneNumber.text);
-                pageStack.replace(Qt.resolvedUrl("WorkingPage.qml"));
+                telegram.completeRegistration(code.text, firstName.text,
+                                              lastName.text);
+                pageStack.pop(null, PageStackAction.Immediate);
             }
         }
     }

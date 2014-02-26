@@ -48,17 +48,17 @@ Page {
         anchors.horizontalCenter: parent.horizontalCenter;
     }
 
-    Component.onCompleted: {
-        telegram.start();
-    }
+//    Component.onCompleted: {
+//        telegram.start();
+//    }
 
-    Connections {
-        target: telegram;
-        onPhoneNumberRequested: {
-            console.log("Changing page to PhoneNumberPage");
-            pageStack.replace(Qt.resolvedUrl("PhoneNumberPage.qml"));
-        }
-    }
+//    Connections {
+//        target: telegram;
+//        onPhoneNumberRequested: {
+//            console.log("Changing page to PhoneNumberPage");
+//            pageStack.replace(Qt.resolvedUrl("PhoneNumberPage.qml"));
+//        }
+//    }
 }
 
 
