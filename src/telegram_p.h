@@ -2,9 +2,10 @@
 #define TELEGRAM_P_H
 
 #include <QThread>
-#include <memory>
 
 #include "telegram.h"
+
+class ChatsModel;
 
 extern "C"
 {
@@ -27,7 +28,7 @@ signals:
 protected:
     virtual void run();
 
-private:
+public:
     static void onUsernameCallback(void* context, char** username);
     static void onCheckCodeCallback(void* context, char** code);
     static void onRegisterCallback(void* context, char** code, char** firstName,
@@ -36,8 +37,9 @@ private:
     void setStatus(Telegram::Status value);
 
     Telegram* q_ptr;
-    std::unique_ptr<configuration> pConfig;
+    libcfg pConfig;
     Telegram::Status status;
+    ChatsModel* chatsModel;
 };
 
 #endif // TELEGRAM_P_H

@@ -3,6 +3,7 @@
 
 #include <QObject>
 
+class ChatsModel;
 class TelegramPrivate;
 
 class Telegram : public QObject
@@ -11,6 +12,7 @@ class Telegram : public QObject
     Q_ENUMS(Status)
     Q_DECLARE_PRIVATE(Telegram)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(ChatsModel* chatsModel READ chatsModel NOTIFY chatsModelChanged)
 
 public:
     enum Status
@@ -21,6 +23,7 @@ public:
 
     explicit Telegram(QObject *parent = 0);
     Status status() const;
+    ChatsModel *chatsModel() const;
 
 public slots:
     void start();
@@ -33,6 +36,7 @@ signals:
     void codeResquested();
     void registrationRequested();
     void statusChanged();
+    void chatsModelChanged();
 
 private:
     TelegramPrivate* d_ptr;

@@ -38,6 +38,7 @@
 #include <QGuiApplication>
 
 #include "telegram.h"
+#include "chatsmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
     QQuickView* view;
 
     qmlRegisterType<Telegram>("Telegram", 1, 0, "Telegram");
+    qmlRegisterType<ChatsModel>("Telegram", 1, 0, "ChatsModel");
 
 #ifdef Q_OS_CYGWIN
     app = new QGuiApplication(argc, argv);

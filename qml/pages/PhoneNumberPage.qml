@@ -55,8 +55,6 @@ Page {
         inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhDigitsOnly;
         validator: RegExpValidator { regExp: /^[0-9]{11,}$/ }
         label: "Phone number";
-
-        text: "34678489951";
     }
 
     Button {

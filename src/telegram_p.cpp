@@ -5,30 +5,34 @@
 #include <future>
 #include <string>
 
+#include "chatsmodel.h"
 #include "tools.h"
 
 TelegramPrivate::TelegramPrivate(Telegram* parent)
     : QThread(parent)
     , q_ptr(parent)
     , status(Telegram::Status::Connecting)
+    , chatsModel(new ChatsModel(this))
 {
-    pConfig.reset(new configuration);
-    pConfig->context = this;
-    pConfig->verbosity = 1;
-    pConfig->pfn_ask_username = (fn_ask_username_callback)
+    pConfig.ctx = this;
+    pConfig.verbosity = 0;
+    pConfig.pfn_ask_username = (fn_ask_username_callback)
             &TelegramPrivate::onUsernameCallback;
-    pConfig->pfn_ask_code = (fn_ask_code_callback)
+    pConfig.pfn_ask_code = (fn_ask_code_callback)
             &TelegramPrivate::onCheckCodeCallback;
-    pConfig->pfn_ask_code_register = (fn_ask_code_register_callback)
+    pConfig.pfn_ask_code_register = (fn_ask_code_register_callback)
             &TelegramPrivate::onRegisterCallback;
-    pConfig->pfn_connected = (fn_connected_callback)
+    pConfig.pfn_connected = (fn_connected_callback)
             &TelegramPrivate::onConnected;
+
+    pConfig.get_chats_callback.ctx = chatsModel;
+    pConfig.get_chats_callback.function = &ChatsModel::onNewChat;
 }
 
 void TelegramPrivate::run()
 {
     qDebug() << "Calling tg-main";
-    initialize_lib_tg(pConfig.get());
+    initialize_lib_tg(&pConfig);
 }
 
 void TelegramPrivate::onUsernameCallback(void *context, char **username)

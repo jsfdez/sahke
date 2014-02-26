@@ -4,6 +4,8 @@
 
 #include "telegram_p.h"
 
+#include "chatsmodel.h"
+
 Telegram::Telegram(QObject *parent)
     : QObject(parent)
     , d_ptr(new TelegramPrivate(this))
@@ -14,6 +16,12 @@ Telegram::Status Telegram::status() const
 {
     Q_D(const Telegram);
     return d->status;
+}
+
+ChatsModel* Telegram::chatsModel() const
+{
+    Q_D(const Telegram);
+    return d->chatsModel;
 }
 
 void Telegram::start()
