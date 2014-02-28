@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import Telegram 1.0
 
 Page {
     PageHeader {
@@ -8,31 +9,55 @@ Page {
         anchors.topMargin: Theme.paddingSmall;
         title: qsTr("Conversations");
     }
-//    Column {
-//        spacing: Theme.paddingMedium;
-//        anchors.fill: parent
-//        anchors.margins: Theme.paddingSmall;
 
-//    }
-    ListView {
+    SilicaListView {
         id: view;
-        anchors.top: header.bottom;
-        anchors.topMargin: Theme.paddingMedium;
-        anchors.bottom: parent.bottom;
-        anchors.left: parent.left;
-        anchors.right: parent.right;
+        anchors { top: header.bottom; left: parent.left; right: parent.right;
+            bottom: parent.bottom; topMargin: Theme.paddingMedium; }
         model: telegram.chatsModel;
-        delegate: Text {
-            width: 100;
-            height: 100;
-            text: "hola";
-            Component.onCompleted: console.log("olaKase?");
-        }
-    }
+        delegate: ListItem {
+            id: listItem;
+            width: parent.width;
+            contentHeight: Theme.itemSizeMedium;
+            menu: ContextMenu { MenuItem { text: "Remove"; onClicked: remove(); } }
+            Text {
+                text: lastMessage;
+                font.pixelSize: label.font.pixelSize;
+                font.bold: true;
+                anchors.fill: parent;
+//                anchors.verticalCenter: parent.verticalCenter;
+//                anchors.right: parent.right;
+                anchors.leftMargin: Theme.paddingSmall;
+                anchors.rightMargin: Theme.paddingSmall;
+                opacity: 0.05;
+                color: "white";
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere;
+                elide: Text.ElideRight;
+            }
+            ListView.onRemove: animateRemoval(listItem);
+            function remove() {
+                remorseAction("Deleting", function() { view.model.remove(index); } );
+            }
 
-    Component.onCompleted: {
-        console.log("el modelo es: " + view.model)
-        console.log("el modelo es: " + telegram.chatsModel);
-        console.log("count: " + view.count);
+            Rectangle {
+                id: labelDebugRect;
+                anchors.fill: label;
+                color: "pink";
+                visible: debug;
+            }
+
+            Label {
+                id: label;
+                anchors.centerIn: parent;
+
+                text: peerType === ChatsModel.User ? firstName + " " + lastName
+                                                   : groupName;
+            }
+
+            onClicked: {
+                console.log("Opening chat...");
+                telegram.chatInfo(peerType, index);
+            }
+        }
     }
 }

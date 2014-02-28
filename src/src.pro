@@ -6,11 +6,13 @@ TARGET = sahke
 CONFIG += debug
 HEADERS += telegram.h \
     telegram_p.h \
-    chatsmodel.h
+    chatsmodel.h \
+    chat.h
 SOURCES += sahke.cpp \
     telegram.cpp \
     telegram_p.cpp \
-    chatsmodel.cpp
+    chatsmodel.cpp \
+    chat.cpp
 
 QMAKE_CXXFLAGS += -std=c++0x -fPIC
 PRE_TARGETDEPS += ../lib/libtg.a

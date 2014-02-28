@@ -6,6 +6,7 @@
 #include "telegram.h"
 
 class ChatsModel;
+class Peer;
 
 extern "C"
 {
@@ -20,26 +21,32 @@ class TelegramPrivate : public QThread
 public:
     TelegramPrivate(Telegram* parent);
 
+    Telegram* q_ptr;
+    libcfg pConfig;
+    Telegram::Status status;
+    ChatsModel* chatsModel;
+    QList<Peer*> peerList;
+
 signals:
     void phoneNumberSet(const QString& phoneNumber);
     void userDataSet(const QString& code, const QString& firstName,
                      const QString& lastName);
+    void newChatReceived(peer_id_t id, peer_t* U);
 
 protected:
     virtual void run();
+    void addChat(peer_id_t id, peer_t* U);
 
-public:
+private:
     static void onUsernameCallback(void* context, char** username);
     static void onCheckCodeCallback(void* context, char** code);
     static void onRegisterCallback(void* context, char** code, char** firstName,
                                    char** lastName);
     static void onConnected(void* context);
+    static void onNewChat(void* context, peer_id_t id, peer_t *U);
+    static void onChatInformation(void* context, chat* C);
+    void chatInformationReceived(struct chat* C);
     void setStatus(Telegram::Status value);
-
-    Telegram* q_ptr;
-    libcfg pConfig;
-    Telegram::Status status;
-    ChatsModel* chatsModel;
 };
 
 #endif // TELEGRAM_P_H

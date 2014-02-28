@@ -7,6 +7,7 @@
 
 #include "chatsmodel.h"
 #include "tools.h"
+#include "chat.h"
 
 TelegramPrivate::TelegramPrivate(Telegram* parent)
     : QThread(parent)
@@ -25,14 +26,27 @@ TelegramPrivate::TelegramPrivate(Telegram* parent)
     pConfig.pfn_connected = (fn_connected_callback)
             &TelegramPrivate::onConnected;
 
-    pConfig.get_chats_callback.ctx = chatsModel;
-    pConfig.get_chats_callback.function = &ChatsModel::onNewChat;
+    pConfig.get_chats_callback.object = chatsModel;
+    pConfig.get_chats_callback.function = &TelegramPrivate::onNewChat;
+
+    connect(this, &TelegramPrivate::newChatReceived, this,
+            &TelegramPrivate::addChat);
 }
 
 void TelegramPrivate::run()
 {
     qDebug() << "Calling tg-main";
     initialize_lib_tg(&pConfig);
+}
+
+void TelegramPrivate::addChat(peer_id_t id, peer_t *U)
+{
+    if (id.type == PEER_USER)
+    {
+        Q_Q(Telegram);
+        peerList.append(new Peer(id, U, this));
+        emit q->peerListChanged();
+    }
 }
 
 void TelegramPrivate::onUsernameCallback(void *context, char **username)
@@ -93,6 +107,26 @@ void TelegramPrivate::onConnected(void *context)
 {
     TelegramPrivate* q = static_cast<TelegramPrivate*>(context);
     q->setStatus(Telegram::Status::Connected);
+}
+
+void TelegramPrivate::onNewChat(void *context, peer_id_t id, peer_t *U)
+{
+    TelegramPrivate* q = static_cast<TelegramPrivate*>(context);
+    q->metaObject()->invokeMethod(q->chatsModel, "addNewChat",
+                                  Q_ARG(peer_id_t, id),
+                                  Q_ARG(peer_t*, U));
+}
+
+void TelegramPrivate::onChatInformation(void *context, chat *C)
+{
+    TelegramPrivate* q = static_cast<TelegramPrivate*>(context);
+    q->metaObject()->invokeMethod(q, QT_STRINGIFY(chatInformationReceived),
+                                  Q_ARG(chat*, C));
+}
+
+void TelegramPrivate::chatInformationReceived(chat *C)
+{
+    qDebug() << __FUNCTION__ << C;
 }
 
 void TelegramPrivate::setStatus(Telegram::Status value)

@@ -37,6 +37,7 @@
 #endif
 #include <QGuiApplication>
 
+#include "chat.h"
 #include "telegram.h"
 #include "chatsmodel.h"
 
@@ -47,6 +48,10 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<Telegram>("Telegram", 1, 0, "Telegram");
     qmlRegisterType<ChatsModel>("Telegram", 1, 0, "ChatsModel");
+    qmlRegisterType<Peer>("Telegram", 1, 0, "Peer");
+    qRegisterMetaType<peer_id_t>("peer_id_t");
+    qRegisterMetaType<peer_t*>("peer_t*");
+    qRegisterMetaType<QList<Peer*>>("PeerList");
 
 #ifdef Q_OS_CYGWIN
     app = new QGuiApplication(argc, argv);
@@ -58,6 +63,7 @@ int main(int argc, char *argv[])
 
     view->engine()->rootContext()->setContextProperty(
                 "telegram", new Telegram(view));
+    view->engine()->rootContext()->setContextProperty("debug", QVariant(false));
 #ifdef Q_OS_CYGWIN
     view->setSource(QUrl::fromLocalFile("win/qml/sahke.qml");
 #else

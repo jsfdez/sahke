@@ -24,6 +24,12 @@ ChatsModel* Telegram::chatsModel() const
     return d->chatsModel;
 }
 
+QList<Peer*> Telegram::peerList() const
+{
+    Q_D(const Telegram);
+    return d->peerList;
+}
+
 void Telegram::start()
 {
     Q_D(Telegram);
@@ -44,3 +50,8 @@ void Telegram::completeRegistration(const QString &code,
     emit d->userDataSet(code, firstName, lastName);
 }
 
+void Telegram::chatInfo(int chatType, int index)
+{
+    Q_D(Telegram);
+    do_get_chat_info({chatType, index});
+}

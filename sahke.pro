@@ -17,7 +17,6 @@ SUBDIRS += 3rdParty/tg/tg.pro \
 
 OTHER_FILES += rpm/sahke.spec \
     rpm/sahke.yaml \
-    sahke.desktop \
     qml/sahke.qml \
     qml/cover/CoverPage.qml \
     qml/pages/PhoneNumberPage.qml \
@@ -26,7 +25,8 @@ OTHER_FILES += rpm/sahke.spec \
     qml/pages/UserDetailsPage.qml \
     qml/pages/WaitingPage.qml \
     qml/pages/ConversationsPage.qml \
-    qml/pages/ContactsPage.qml
+    qml/pages/ContactsPage.qml \
+    sahke.desktop
     3rdParty/tg/server.pub
 
 pubkeys.files = 3rdParty/tg/server.pub
