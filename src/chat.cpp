@@ -1,7 +1,12 @@
 #include "chat.h"
+#include <QDebug>
 
 extern "C" {
+#include "libtg.h"
 #include "queries.h"
+#include "mtproto-common.h"
+int get_history_on_answer (struct query *q);
+void out_peer_id (peer_id_t id);
 }
 
 ChatModel::ChatModel(QObject *parent)
@@ -35,6 +40,7 @@ QVariant ChatModel::data(const QModelIndex& index, int role) const
     if (message != nullptr) switch(role)
     {
     case MessageRole:
+        qDebug() << "pedido mensaje:" << index.row();
         return message->text;
     case DateRole:
         return message->date;
@@ -64,6 +70,7 @@ bool ChatModel::loadChat(int type, int id)
     peer_t* peer = user_chat_get(peerId);
     if(peer != m_peer)
     {
+        getChatHistory(peerId);
         beginResetModel();
         beginInsertRows(QModelIndex(), 0, rowCount());
         switch(type) {
@@ -89,6 +96,43 @@ void ChatModel::sendText(const QString &text)
 {
     peer_id_t peerId = {m_type, m_id};
     do_send_message(peerId, text.toUtf8().data(), text.count());
+}
+
+int ChatModel::onReceivedChatHistory (query *q)
+{
+    int retval;
+    QueryMethods* queryMethods = (QueryMethods*)q->methods;
+    retval = get_history_on_answer(q);
+    queryMethods->context->metaObject()->invokeMethod(
+                queryMethods->context, QT_STRINGIFY(updateChat));
+
+    return retval;
+}
+
+void ChatModel::updateChat()
+{
+    Q_ASSERT(m_peer);
+    beginResetModel();
+    endResetModel();
+}
+
+void ChatModel::getChatHistory(peer_id_t id)
+{
+    QueryMethods* queryMethods = new QueryMethods(this);
+    queryMethods->on_answer = &ChatModel::onReceivedChatHistory;
+    queryMethods->peerId = id;
+
+    clear_packet();
+    out_int(CODE_messages_get_history);
+    out_peer_id(id);
+    out_int(0);
+    out_int(0);
+    out_int(10);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+    send_query(DC_working, packet_ptr - packet_buffer, packet_buffer,
+               queryMethods, (void *)*(long *)&id);
+#pragma GCC diagnostic pop
 }
 
 message* ChatModel::messageIndex(int row) const

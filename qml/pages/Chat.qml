@@ -29,8 +29,9 @@ Page {
     SilicaListView {
         id: view;
         anchors { top: header.bottom; left: parent.left; right: parent.right;
-            bottom: sendBox.bottom; topMargin: Theme.paddingMedium; }
+            bottom: sendBox.top; topMargin: Theme.paddingMedium; }
         model: chat;
+        verticalLayoutDirection: ListView.BottomToTop;
         delegate: ListItem {
             id: listItem;
             width: parent.width;
@@ -52,7 +53,6 @@ Page {
                     font.pixelSize: Theme.fontSizeExtraSmall;
                 }
             }
-
         }
     }
 

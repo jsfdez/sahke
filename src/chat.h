@@ -5,6 +5,7 @@
 
 extern "C" {
 #include "structures.h"
+#include "queries.h"
 }
 
 class ChatModel : public QAbstractListModel
@@ -30,6 +31,24 @@ public:
     Q_INVOKABLE void sendText(const QString& text);
 
 private:
+    struct QueryMethods : query_methods {
+        QueryMethods(ChatModel* ctx)
+        {
+            context = ctx;
+            on_answer = nullptr;
+            on_error = nullptr;
+            on_timeout = nullptr;
+        }
+
+        ChatModel* context;
+        peer_id_t peerId;
+    };
+
+    static int onReceivedChatHistory(struct query *q);
+    Q_INVOKABLE void updateChat();
+
+    void getChatHistory(peer_id_t id);
+
     message* messageIndex(int row) const;
     int m_type;
     int m_id;
