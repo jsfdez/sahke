@@ -24,7 +24,6 @@ void PeersModel::addNewChat(peer_id_t id, peer_t *U)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.append(qMakePair(id, U));
-    do_get_history(id, 10);
     endInsertRows();
 }
 

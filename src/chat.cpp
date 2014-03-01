@@ -1,5 +1,9 @@
 #include "chat.h"
 
+extern "C" {
+#include "queries.h"
+}
+
 ChatModel::ChatModel(QObject *parent)
     : QAbstractListModel(parent)
     , m_type(-1)
@@ -79,6 +83,12 @@ bool ChatModel::loadChat(int type, int id)
         endResetModel();
     }
     return peer != nullptr;
+}
+
+void ChatModel::sendText(const QString &text)
+{
+    peer_id_t peerId = {m_type, m_id};
+    do_send_message(peerId, text.toUtf8().data(), text.count());
 }
 
 message* ChatModel::messageIndex(int row) const

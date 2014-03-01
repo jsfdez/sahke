@@ -27,6 +27,7 @@ public:
     virtual QHash<int,QByteArray> roleNames() const;
 
     Q_INVOKABLE bool loadChat(int type, int id);
+    Q_INVOKABLE void sendText(const QString& text);
 
 private:
     message* messageIndex(int row) const;
