@@ -3,8 +3,8 @@
 
 #include <QObject>
 
-class Peer;
-class ChatsModel;
+class ChatModel;
+class PeersModel;
 class TelegramPrivate;
 
 class Telegram : public QObject
@@ -13,8 +13,8 @@ class Telegram : public QObject
     Q_ENUMS(Status)
     Q_DECLARE_PRIVATE(Telegram)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(ChatsModel* chatsModel READ chatsModel NOTIFY chatsModelChanged)
-    Q_PROPERTY(QList<Peer*> peerList READ peerList NOTIFY peerListChanged)
+    Q_PROPERTY(PeersModel* chatsModel READ chatsModel NOTIFY chatsModelChanged)
+    Q_PROPERTY(QList<ChatModel*> peerList READ peerList NOTIFY peerListChanged)
 
 public:
     enum Status
@@ -25,8 +25,8 @@ public:
 
     explicit Telegram(QObject *parent = 0);
     Status status() const;
-    ChatsModel *chatsModel() const;
-    QList<Peer*> peerList() const;
+    PeersModel *chatsModel() const;
+    QList<ChatModel*> peerList() const;
 
 public slots:
     void start();

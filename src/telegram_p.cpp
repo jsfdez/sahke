@@ -13,7 +13,7 @@ TelegramPrivate::TelegramPrivate(Telegram* parent)
     : QThread(parent)
     , q_ptr(parent)
     , status(Telegram::Status::Connecting)
-    , chatsModel(new ChatsModel(this))
+    , chatsModel(new PeersModel(this))
 {
     pConfig.ctx = this;
     pConfig.verbosity = 0;
@@ -28,25 +28,12 @@ TelegramPrivate::TelegramPrivate(Telegram* parent)
 
     pConfig.get_chats_callback.object = chatsModel;
     pConfig.get_chats_callback.function = &TelegramPrivate::onNewChat;
-
-    connect(this, &TelegramPrivate::newChatReceived, this,
-            &TelegramPrivate::addChat);
 }
 
 void TelegramPrivate::run()
 {
     qDebug() << "Calling tg-main";
     initialize_lib_tg(&pConfig);
-}
-
-void TelegramPrivate::addChat(peer_id_t id, peer_t *U)
-{
-    if (id.type == PEER_USER)
-    {
-        Q_Q(Telegram);
-        peerList.append(new Peer(id, U, this));
-        emit q->peerListChanged();
-    }
 }
 
 void TelegramPrivate::onUsernameCallback(void *context, char **username)

@@ -47,11 +47,12 @@ int main(int argc, char *argv[])
     QQuickView* view;
 
     qmlRegisterType<Telegram>("Telegram", 1, 0, "Telegram");
-    qmlRegisterType<ChatsModel>("Telegram", 1, 0, "ChatsModel");
-    qmlRegisterType<Peer>("Telegram", 1, 0, "Peer");
+    qmlRegisterType<PeersModel>("Telegram", 1, 0, "ChatsModel");
+    qmlRegisterType<ChatModel>("Telegram", 1, 0, "Chat");
+//    qmlRegisterType<peer_t*>("Telegram", 1, 0, "Peer");
     qRegisterMetaType<peer_id_t>("peer_id_t");
     qRegisterMetaType<peer_t*>("peer_t*");
-    qRegisterMetaType<QList<Peer*>>("PeerList");
+    qRegisterMetaType<QList<ChatModel*>>("PeerList");
 
 #ifdef Q_OS_CYGWIN
     app = new QGuiApplication(argc, argv);

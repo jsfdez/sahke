@@ -3,6 +3,8 @@ import Sailfish.Silica 1.0
 import Telegram 1.0
 
 Page {
+    property url _chat: "Chat.qml";
+
     PageHeader {
         id: header;
         anchors.top: parent.top;
@@ -25,8 +27,6 @@ Page {
                 font.pixelSize: label.font.pixelSize;
                 font.bold: true;
                 anchors.fill: parent;
-//                anchors.verticalCenter: parent.verticalCenter;
-//                anchors.right: parent.right;
                 anchors.leftMargin: Theme.paddingSmall;
                 anchors.rightMargin: Theme.paddingSmall;
                 opacity: 0.05;
@@ -55,8 +55,9 @@ Page {
             }
 
             onClicked: {
-                console.log("Opening chat...");
-                telegram.chatInfo(peerType, index);
+                console.log("Opening chat..." + peer);
+                var chatPage = pageStack.push(Qt.resolvedUrl(_chat));
+                chatPage.loadChat(peerType, peerId);
             }
         }
     }

@@ -6,17 +6,22 @@
 
 #include "structures.h"
 
-class ChatsModel : public QAbstractListModel
+class ChatModel;
+
+class PeersModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_ENUMS(PeerType)
 
 public:
     enum PeerType {
+        Unknown = PEER_UNKNOWN,
         User = PEER_USER,
-        GroupChat = PEER_CHAT
+        GroupChat = PEER_CHAT,
+        GeoChat = PEER_GEO_CHAT,
+        EncriptedChat = PEER_ENCR_CHAT
     };
-    explicit ChatsModel(QObject *parent = 0);
+    explicit PeersModel(QObject *parent = 0);
 
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index,
@@ -33,11 +38,13 @@ private:
     enum Roles
     {
         PeerTypeRole = Qt::UserRole + 1,
+        PeerIdRole,
         FirstNameRole,
         LastNameRole,
         PhoneNumberRole,
         GroupNameRole,
-        LastMessageRole
+        LastMessageRole,
+        PeerRole
     };
 
     typedef QList<QPair<peer_id_t,peer_t*>> Container;

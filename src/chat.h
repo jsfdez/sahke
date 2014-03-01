@@ -1,46 +1,39 @@
 #ifndef CHAT_H
 #define CHAT_H
 
-#include <QObject>
-#include "structures.h"
+#include <QAbstractListModel>
 
-class Peer : public QObject
+extern "C" {
+#include "structures.h"
+}
+
+class ChatModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_ENUMS(PeerType)
-    Q_PROPERTY(int id READ id NOTIFY idChanged)
-    Q_PROPERTY(PeerType peerType READ peerType NOTIFY peerTypeChanged)
-    Q_PROPERTY(QString firstName READ firstName NOTIFY firstNameChanged)
-    Q_PROPERTY(QString lastName READ lastName NOTIFY lastNameChanged)
+    Q_ENUMS(Roles)
 
 public:
-    enum PeerType
-    {
-        PeerUnknown = PEER_UNKNOWN,
-        PeerUser = PEER_USER,
-        PeerChat = PEER_CHAT,
-        PeerGeoChat = PEER_CHAT,
-        PeerEncriptedChat = PEER_ENCR_CHAT
+    enum Roles {
+        MessageRole = Qt::UserRole + 1,
+        DateRole,
+        FromRole
     };
 
-    explicit Peer(QObject *parent = 0);
-    explicit Peer(peer_id_t id, peer_t* data, QObject *parent = 0);
+    ChatModel(QObject* parent = 0);
 
-    int id() const;
-    PeerType peerType() const;
+    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    virtual QVariant data(const QModelIndex& index,
+                          int role = Qt::DisplayRole) const;
+    virtual QHash<int,QByteArray> roleNames() const;
 
-    QString firstName() const;
-    QString lastName() const;
-
-signals:
-    void idChanged();
-    void peerTypeChanged();
-    void firstNameChanged();
-    void lastNameChanged();
+    Q_INVOKABLE bool loadChat(int type, int id);
 
 private:
-    peer_id_t m_id;
-    peer_t* m_data;
+    message* messageIndex(int row) const;
+    int m_type;
+    int m_id;
+    peer_t* m_peer;
+    QHash<int,QString> m_names;
 };
 
 #endif // CHAT_H

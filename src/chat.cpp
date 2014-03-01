@@ -1,43 +1,97 @@
 #include "chat.h"
 
-#include <QDebug>
-
-Peer::Peer(QObject *parent)
-    : QObject(parent)
-    , m_id({0, -1})
-    , m_data(nullptr)
+ChatModel::ChatModel(QObject *parent)
+    : QAbstractListModel(parent)
+    , m_type(-1)
+    , m_id(-1)
+    , m_peer(nullptr)
 {
-
 }
 
-Peer::Peer(peer_id_t id, peer_t* data, QObject *parent)
-    : QObject(parent)
-    , m_id(id)
-    , m_data(data)
+int ChatModel::rowCount(const QModelIndex&) const
 {
-    emit idChanged();
-    emit peerTypeChanged();
-    emit firstNameChanged();
-    emit lastNameChanged();
+    int count = 0;
+    if (m_peer != nullptr)
+    {
+        struct message* message = m_peer->chat.last;
+        while(message)
+        {
+            count++;
+            message = message->next;
+        }
+    }
+    return count;
 }
 
-int Peer::id() const
+QVariant ChatModel::data(const QModelIndex& index, int role) const
 {
-    return m_id.id;
+    Q_ASSERT(m_peer != nullptr);
+    struct message* message = messageIndex(index.row());
+
+    if (message != nullptr) switch(role)
+    {
+    case MessageRole:
+        return message->text;
+    case DateRole:
+        return message->date;
+    case FromRole:
+    {
+        QString name = m_names.value(message->from_id.id);
+        if (name.isEmpty())
+            name = "Me";
+        return name;
+    }
+    }
+    return QVariant();
 }
 
-Peer::PeerType Peer::peerType() const
+QHash<int, QByteArray> ChatModel::roleNames() const
 {
-    return static_cast<PeerType>(m_id.type);
+    QHash<int, QByteArray> roles;
+    roles.insert(MessageRole, "message");
+    roles.insert(DateRole, "date");
+    roles.insert(FromRole, "from");
+    return roles;
 }
 
-QString Peer::firstName() const
+bool ChatModel::loadChat(int type, int id)
 {
-    qDebug() << "FIRST NAME: " << m_data->user.first_name;
-    return m_data->user.first_name;
+    peer_id_t peerId = {type, id};
+    peer_t* peer = user_chat_get(peerId);
+    if(peer != m_peer)
+    {
+        beginResetModel();
+        beginInsertRows(QModelIndex(), 0, rowCount());
+        switch(type) {
+        case PEER_USER:
+            m_names.insert(peer->user.id.id, peer->user.print_name);
+            break;
+        case PEER_CHAT:
+            for(int i = 0; i < peer->chat.user_list_size; i++)
+            {
+                m_names.insert(peer->chat.user_list[i].user_id,
+                               QString::number(peer->chat.last->id));
+            }
+        }
+        m_type = type;
+        m_id = id;
+        m_peer = peer;
+        endResetModel();
+    }
+    return peer != nullptr;
 }
 
-QString Peer::lastName() const
+message* ChatModel::messageIndex(int row) const
 {
-    return m_data->user.last_name;
+    Q_ASSERT(m_peer != nullptr);
+    struct message* message = nullptr;
+    switch(m_type)
+    {
+    case PEER_USER: message = m_peer->user.last; break;
+    case PEER_CHAT: message = m_peer->chat.last; break;
+    }
+    for (int i = 0; message != nullptr; i++, message = message->next)
+        if (i == row)
+            break;
+    return message;
 }

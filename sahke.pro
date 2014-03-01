@@ -26,6 +26,7 @@ OTHER_FILES += rpm/sahke.spec \
     qml/pages/WaitingPage.qml \
     qml/pages/ConversationsPage.qml \
     qml/pages/ContactsPage.qml \
+    qml/pages/Chat.qml \
     sahke.desktop
     3rdParty/tg/server.pub
 
@@ -33,46 +34,3 @@ pubkeys.files = 3rdParty/tg/server.pub
 pubkeys.path = /etc/$${TARGET}
 
 INSTALLS += pubkeys
-
-#TARGET = sahke
-
-#CONFIG += sailfishapp tg_cli
-
-#SOURCES += src/sahke.cpp
-
-#INCLUDEPATH += 3rdParty/tg
-
-#tg_cli {
-#    TG_PATH = 3rdParty/tg
-#    INCLUDEPATH += $$TG_PATH
-#    HEADERS += $$files($$TG_PATH/*.h)
-##    SOURCES += $$files($$TG_PATH/*.c)
-#SOURCES += \
-##    3rdParty/tg/binlog.c \
-#    3rdParty/tg/interface.c \
-#    3rdParty/tg/loop.c \
-##    3rdParty/tg/lua-tg.c \
-##    3rdParty/tg/main.c \
-#    3rdParty/tg/mtproto-client.c \
-#    3rdParty/tg/mtproto-common.c \
-#    3rdParty/tg/net.c \
-#    3rdParty/tg/queries.c \
-#    3rdParty/tg/structures.c \
-#    3rdParty/tg/tools.c
-#    LIBS += -lcrypto -lz -lrt -lm -lreadline -llua -lssl
-#}
-
-#QMAKE_LFLAGS += -esahke_main
-
-#OTHER_FILES += rpm/sahke.spec \
-#    rpm/sahke.yaml \
-#    sahke.desktop
-
-#OTHER_FILES += qml/sahke.qml \
-#    qml/cover/CoverPage.qml \
-#    qml/pages/FirstPage.qml \
-#    qml/pages/SecondPage.qml \
-#    rpm/sahke.spec \
-#    rpm/sahke.yaml \
-#    sahke.desktop
-

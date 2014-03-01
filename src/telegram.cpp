@@ -18,13 +18,13 @@ Telegram::Status Telegram::status() const
     return d->status;
 }
 
-ChatsModel* Telegram::chatsModel() const
+PeersModel* Telegram::chatsModel() const
 {
     Q_D(const Telegram);
     return d->chatsModel;
 }
 
-QList<Peer*> Telegram::peerList() const
+QList<ChatModel*> Telegram::peerList() const
 {
     Q_D(const Telegram);
     return d->peerList;
@@ -52,6 +52,5 @@ void Telegram::completeRegistration(const QString &code,
 
 void Telegram::chatInfo(int chatType, int index)
 {
-    Q_D(Telegram);
     do_get_chat_info({chatType, index});
 }

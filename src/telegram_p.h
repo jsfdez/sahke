@@ -5,8 +5,8 @@
 
 #include "telegram.h"
 
-class ChatsModel;
-class Peer;
+class PeersModel;
+class ChatModel;
 
 extern "C"
 {
@@ -24,8 +24,8 @@ public:
     Telegram* q_ptr;
     libcfg pConfig;
     Telegram::Status status;
-    ChatsModel* chatsModel;
-    QList<Peer*> peerList;
+    PeersModel* chatsModel;
+    QList<ChatModel*> peerList;
 
 signals:
     void phoneNumberSet(const QString& phoneNumber);
@@ -35,7 +35,6 @@ signals:
 
 protected:
     virtual void run();
-    void addChat(peer_id_t id, peer_t* U);
 
 private:
     static void onUsernameCallback(void* context, char** username);

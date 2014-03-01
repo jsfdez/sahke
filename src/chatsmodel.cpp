@@ -4,29 +4,36 @@
 #include <QEventLoop>
 #include <QGuiApplication>
 
+#include "chat.h"
+
+extern "C" {
+#include "queries.h"
+}
+
 bool operator<(const peer_id_t& l, const peer_id_t& r)
 {
     return l.id < r.id || (l.id == r.id && l.type < r.type);
 }
 
-ChatsModel::ChatsModel(QObject *parent)
+PeersModel::PeersModel(QObject *parent)
     : QAbstractListModel(parent)
 {
 }
 
-void ChatsModel::addNewChat(peer_id_t id, peer_t *U)
+void PeersModel::addNewChat(peer_id_t id, peer_t *U)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.append(qMakePair(id, U));
+    do_get_history(id, 10);
     endInsertRows();
 }
 
-int ChatsModel::rowCount(const QModelIndex&) const
+int PeersModel::rowCount(const QModelIndex&) const
 {
     return m_data.count();
 }
 
-QVariant ChatsModel::data(const QModelIndex &index, int role) const
+QVariant PeersModel::data(const QModelIndex &index, int role) const
 {
     const peer_id_t id = m_data.at(index.row()).first;
     const peer_t* data = m_data.at(index.row()).second;
@@ -34,6 +41,8 @@ QVariant ChatsModel::data(const QModelIndex &index, int role) const
     {
     case PeerTypeRole:
         return id.type;
+    case PeerIdRole:
+        return id.id;
     case FirstNameRole:
         Q_ASSERT(id.type == User);
         return data->user.first_name;
@@ -48,6 +57,8 @@ QVariant ChatsModel::data(const QModelIndex &index, int role) const
         return data->chat.title;
     case LastMessageRole:
         return data->last->text;
+    case PeerRole:
+        return data;
     case Qt::DisplayRole:
         switch (id.type)
         {
@@ -62,14 +73,16 @@ QVariant ChatsModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-QHash<int, QByteArray> ChatsModel::roleNames() const
+QHash<int, QByteArray> PeersModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles.insert(PeerTypeRole, "peerType");
+    roles.insert(PeerIdRole, "peerId");
     roles.insert(FirstNameRole, "firstName");
     roles.insert(LastNameRole, "lastName");
     roles.insert(PhoneNumberRole, "phoneNumber");
     roles.insert(GroupNameRole, "groupName");
     roles.insert(LastMessageRole, "lastMessage");
+    roles.insert(PeerRole, "peer");
     return roles;
 }
