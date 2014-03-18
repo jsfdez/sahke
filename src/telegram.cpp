@@ -12,6 +12,12 @@ Telegram::Telegram(QObject *parent)
 {
 }
 
+Telegram *Telegram::instance()
+{
+    static Telegram telegram;
+    return &telegram;
+}
+
 Telegram::Status Telegram::status() const
 {
     Q_D(const Telegram);

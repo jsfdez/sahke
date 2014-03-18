@@ -8,6 +8,8 @@
 class PeersModel;
 class ChatModel;
 
+#include "querymethods.h"
+
 extern "C"
 {
 #include "libtg.h"
@@ -37,6 +39,8 @@ protected:
     virtual void run();
 
 private:
+    typedef QueryMethodsBase<TelegramPrivate> QueryMethods;
+
     static void onUsernameCallback(void* context, char** username);
     static void onCheckCodeCallback(void* context, char** code);
     static void onRegisterCallback(void* context, char** code, char** firstName,
@@ -46,6 +50,8 @@ private:
     static void onChatInformation(void* context, chat* C);
     void chatInformationReceived(struct chat* C);
     void setStatus(Telegram::Status value);
+
+    void doGetDifference();
 };
 
 #endif // TELEGRAM_P_H

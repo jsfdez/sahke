@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
     QGuiApplication* app;
     QQuickView* view;
 
-    qmlRegisterType<Telegram>("Telegram", 1, 0, "Telegram");
     qmlRegisterType<PeersModel>("Telegram", 1, 0, "ChatsModel");
     qmlRegisterType<ChatModel>("Telegram", 1, 0, "Chat");
 //    qmlRegisterType<peer_t*>("Telegram", 1, 0, "Peer");
@@ -63,8 +62,8 @@ int main(int argc, char *argv[])
 #endif
 
     view->engine()->rootContext()->setContextProperty(
-                "telegram", new Telegram(view));
-    view->engine()->rootContext()->setContextProperty("debug", QVariant(false));
+                "telegram", Telegram::instance());
+    view->engine()->rootContext()->setContextProperty("debug", QVariant(true));
 #ifdef Q_OS_CYGWIN
     view->setSource(QUrl::fromLocalFile("win/qml/sahke.qml");
 #else

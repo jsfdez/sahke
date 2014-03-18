@@ -3,21 +3,38 @@
 
 #include <QAbstractListModel>
 
+#include "querymethods.h"
+
 extern "C" {
-#include "structures.h"
 #include "queries.h"
+#include "structures.h"
 }
 
 class ChatModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_ENUMS(Roles)
+    Q_ENUMS(Action)
+    Q_PROPERTY(QString title READ title NOTIFY titleChanged)
 
 public:
     enum Roles {
-        MessageRole = Qt::UserRole + 1,
+        TextRole = Qt::UserRole + 1,
         DateRole,
-        FromRole
+        FromRole,
+        ActionRole
+    };
+
+    enum Action {
+        Message = 0,
+        ChatCreated,
+        ChatChangeTitle,
+        ChatChangePhoto,
+        ChatDeletePhoto,
+        ChatAddUser,
+        ChatDeleteUser,
+
+        NotSupported
     };
 
     ChatModel(QObject* parent = 0);
@@ -30,24 +47,20 @@ public:
     Q_INVOKABLE bool loadChat(int type, int id);
     Q_INVOKABLE void sendText(const QString& text);
 
-private:
-    struct QueryMethods : query_methods {
-        QueryMethods(ChatModel* ctx)
-        {
-            context = ctx;
-            on_answer = nullptr;
-            on_error = nullptr;
-            on_timeout = nullptr;
-        }
+    QString title() const;
 
-        ChatModel* context;
-        peer_id_t peerId;
-    };
+signals:
+    void titleChanged();
+
+private:
+    typedef QueryMethodsBase<ChatModel> QueryMethods;
 
     static int onReceivedChatHistory(struct query *q);
     Q_INVOKABLE void updateChat();
 
     void getChatHistory(peer_id_t id);
+    void getDifference();
+    Action mapToAction(int code) const;
 
     message* messageIndex(int row) const;
     int m_type;

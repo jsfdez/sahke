@@ -9,6 +9,14 @@
 #include "tools.h"
 #include "chat.h"
 
+extern "C"
+{
+void do_insert_header (void);
+#include "queries.h"
+}
+
+#include "mtproto-common.h"
+
 TelegramPrivate::TelegramPrivate(Telegram* parent)
     : QThread(parent)
     , q_ptr(parent)
@@ -124,4 +132,14 @@ void TelegramPrivate::setStatus(Telegram::Status value)
         status = value;
         emit q->statusChanged();
     }
+}
+
+void TelegramPrivate::doGetDifference()
+{
+    QueryMethods queryMethods(this);
+    clear_packet();
+    do_insert_header();
+    out_int(CODE_updates_get_state);
+    send_query(DC_working, packet_ptr - packet_buffer, packet_buffer,
+                &queryMethods, 0);
 }

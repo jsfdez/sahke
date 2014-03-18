@@ -18,12 +18,11 @@ Page {
         id: chat;
     }
 
-
     PageHeader {
         id: header;
         anchors.top: parent.top;
         anchors.topMargin: Theme.paddingSmall;
-        title: qsTr("Conversation");
+        title: chat.title;
     }
 
     SilicaListView {
@@ -31,27 +30,25 @@ Page {
         anchors { top: header.bottom; left: parent.left; right: parent.right;
             bottom: sendBox.top; topMargin: Theme.paddingMedium; }
         model: chat;
+        clip: true;
         verticalLayoutDirection: ListView.BottomToTop;
         delegate: ListItem {
             id: listItem;
             width: parent.width;
-            contentHeight: label.height;
-            Column {
-                anchors.left: parent.left; anchors.right: parent.right;
-                anchors.leftMargin: Theme.paddingSmall;
-                anchors.rightMargin: Theme.paddingSmall;
+            contentHeight: chatDelegate.height;
+            ChatDelegate {
+                id: chatDelegate;
+                userName: from;
+                message: text
 
-                Text {
-                    id: userName;
-                }
-
-                Label {
-                    id: label;
-                    anchors.left: parent.left; anchors.right: parent.right;
-                    wrapMode: Text.WordWrap;
-                    text: message;
-                    font.pixelSize: Theme.fontSizeExtraSmall;
-                }
+                states: [
+                    State { when: action === Chat.ChatAddUser; PropertyChanges { target: chatDelegate; message: "added a user"; } },
+                    State { when: action === Chat.ChatChangePhoto; PropertyChanges { target: chatDelegate; message: "changed photo"; } },
+                    State { when: action === Chat.ChatChangeTitle; PropertyChanges { target: chatDelegate; message: "changed title"; } },
+                    State { when: action === Chat.ChatCreated; PropertyChanges { target: chatDelegate; message: "created the chat"; } },
+                    State { when: action === Chat.ChatDeletePhoto; PropertyChanges { target: chatDelegate; message: "deleted the photo"; } },
+                    State { when: action === Chat.ChatDeleteUser; PropertyChanges { target: chatDelegate; message: "user deleted"; } }
+                ]
             }
         }
     }

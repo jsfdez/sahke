@@ -23,7 +23,8 @@ public:
         Connected
     };
 
-    explicit Telegram(QObject *parent = 0);
+    static Telegram* instance();
+
     Status status() const;
     PeersModel *chatsModel() const;
     QList<ChatModel*> peerList() const;
@@ -44,6 +45,7 @@ signals:
     void peerListChanged();
 
 private:
+    explicit Telegram(QObject *parent = 0);
     TelegramPrivate* d_ptr;
 };
 
