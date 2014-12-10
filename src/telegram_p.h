@@ -10,10 +10,7 @@ class ChatModel;
 
 #include "querymethods.h"
 
-extern "C"
-{
 #include "libtg.h"
-}
 
 class TelegramPrivate : public QThread
 {

@@ -16,7 +16,7 @@ SOURCES += sahke.cpp \
     chat.cpp \
     querymethods.cpp
 
-QMAKE_CXXFLAGS += -std=c++0x -fPIC
+QMAKE_CXXFLAGS += -std=c++0x -fPIC -Wno-psabi
 PRE_TARGETDEPS += ../lib/libtg.a
 INCLUDEPATH += ../3rdParty/tg/tg
 LIBS += -L../lib -ltg

@@ -4,8 +4,8 @@ TEMPLATE = lib
 CONFIG = plugin static debug
 DESTDIR = ../../lib
 
-QMAKE_CFLAGS_DEBUG += -fno-strict-aliasing -fPIC
-QMAKE_CFLAGS_RELEASE += -fno-strict-aliasing -fPIC
+QMAKE_CFLAGS_DEBUG += -fno-strict-aliasing -fPIC -x c
+QMAKE_CFLAGS_RELEASE += -fno-strict-aliasing -fPIC -x c
 DEFINES += 'PROG_NAME=\'\"sahke\"\''
 DEFINES += LIB_TG
 

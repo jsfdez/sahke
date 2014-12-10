@@ -56,6 +56,8 @@ void Telegram::completeRegistration(const QString &code,
     emit d->userDataSet(code, firstName, lastName);
 }
 
+extern "C" void do_get_chat_info (peer_id_t id);
+
 void Telegram::chatInfo(int chatType, int index)
 {
     do_get_chat_info({chatType, index});
